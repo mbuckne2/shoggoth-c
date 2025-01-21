@@ -1,0 +1,202 @@
+{
+  "suite": [
+     {
+      "module":"test_main_menu",
+      "method":"test_credit_count",
+      "tests": [
+        {
+          "name": "1.1) Main Menu 1 [Hint: Displays Credits.]",
+          "points": 1
+        },
+        {
+          "name": "1.2) Main Menu 2 [Hint: Displays Correct Credit Count.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_course_insert",
+      "method":"test_course_insert_1",
+      "tests": [
+        {
+          "name": "2.1) Insert Course 1 [Hint: Basic Behavior.]",
+          "points": 1
+        },
+        {
+          "name": "3.1) Schedule Print [Hint: Basic Behavior.]",
+          "points": 2
+        }
+      ]
+    },
+    {
+      "module":"test_course_insert",
+      "method":"test_course_insert_2",
+      "tests": [
+        {
+          "name": "2.2) Insert Course 2 [Hint: Inserts 2 Courses.]",
+          "points": 1
+        },
+        {
+          "name": "2.3) Insert Course 3 [Hint: Correct Ordering.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_course_insert",
+      "method":"test_course_insert_3",
+      "tests": [
+        {
+          "name": "2.4) Insert Course 4 [Hint: Inserts 3 Courses.]",
+          "points": 1
+        },
+        {
+          "name": "2.5) Insert Course 5 [Hint: Correct Ordering.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_course_insert",
+      "method":"test_course_insert_duplicate",
+      "tests": [
+        {
+          "name": "2.6) Insert Course 6 [Hint: Inserting a Duplicate Course.]",
+          "points": 1
+        },
+        {
+          "name": "2.7) Insert Course 7 [Hint: Prints Error Message on Duplicate.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_course_remove",
+      "method":"test_course_remove_1",
+      "tests": [
+        {
+          "name": "4.1) Remove Course 1 [Hint: Basic Behavior.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_course_remove",
+      "method":"test_course_remove_2",
+      "tests": [
+        {
+          "name": "4.2) Remove Course 2 [Hint: Removing first course in a list of 2.]",
+          "points": 1
+        }
+      ]
+
+    },
+    {
+      "module":"test_course_remove",
+      "method":"test_course_remove_3",
+      "tests": [
+        {
+          "name": "4.3) Remove Course 3 [Hint: Removing course from list of 3.]",
+          "points": 1
+        },
+        {
+          "name": "4.4) Remove Course 4 [Hint: Maintaining list after removing course.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_course_remove",
+      "method":"test_course_remove_missing",
+      "tests": [
+        {
+          "name": "4.5) Remove Course 5 [Hint: Removing a course not in the list.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_file",
+      "method":"test_load_file",
+      "tests": [
+        {
+          "name": "5.1) Load File 1 [Hint: Basic Behavior.]",
+          "points": 1
+        },
+        {
+          "name": "5.2) Load File 2 [Hint: Loads all courses in file.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_file",
+      "method":"test_load_missing_file",
+      "tests": [
+        {
+          "name": "5.3) Load File 3 [Hint: No file exists.]",
+          "points": 2
+        }
+      ]
+    },
+    {
+      "module":"test_file",
+      "method":"test_save_file",
+      "tests": [
+        {
+          "name": "6.1) Save File 1 [Hint: Saves a Course.]",
+          "points": 2
+        },
+        {
+          "name": "6.2) Save File 2 [Hint: Correctly Saves all Courses.]",
+          "points": 2
+        }
+      ]
+    },
+    {
+      "module":"test_memory_mgmt",
+      "method":"test_malloc_1",
+      "tests": [
+        {
+          "name": "7.1) Memory Allocation 1 [Hint: Uses Malloc when creating courses.]",
+          "points": 2
+        },
+        {
+          "name": "7.2) Memory Allocation 2 [Hint: Frees all Memory on close.]",
+          "points": 1
+        },
+        {
+          "name": "7.3) Memory Allocation 3 [Hint: Frees Correct Memory addresses on close.]",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "module":"test_memory_mgmt",
+      "method":"test_malloc_2",
+      "tests": [
+        {
+          "name": "7.4) Memory Allocation 4 [Hint: Frees Memory when removing courses.]",
+          "points": 1
+        },
+        {
+          "name": "7.5) Memory Allocation 5 [Hint: Frees Correct Memory addresses when removing courses.]",
+          "points": 1
+        }
+      ]
+    }
+  ],
+
+  "package_whitelist":[
+    "<stdio.h>", "<stdlib.h>", "<string.h>"
+  ],
+
+  "required_files": [
+    "CompletedScheduler.c"
+  ],
+
+  "required_headers": [
+
+  ]
+
+}
