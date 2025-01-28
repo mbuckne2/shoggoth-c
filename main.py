@@ -181,12 +181,9 @@ if __name__ == '__main__':
     results = []
 
     for method in data["suite"]:
+        # remove the malloc log before running each method
         try:
             os.remove("malloc_log.csv")
-        except:
-            pass
-        try:
-            os.remove("data.txt")
         except:
             pass
 
@@ -207,12 +204,9 @@ if __name__ == '__main__':
 
     build_json(results)
 
+    # remove this at the end just in case
     try:
         os.remove("malloc_log.csv")
-    except:
-        pass
-    try:
-        os.remove("data.txt")
     except:
         pass
 
