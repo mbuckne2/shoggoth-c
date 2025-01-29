@@ -9,15 +9,7 @@ import sys
 
 import helpers
 
-# Get the current directory of the Python script (source directory)
-source_dir = os.path.dirname(os.path.abspath(__file__))
-# Go up one level to the parent directory of the source directory
-parent_dir = os.path.dirname(source_dir)
-
-# Construct the path to the submission directory
-submission_dir = os.path.join(parent_dir, "submission")  # os.path.join(source_dir, 'source_code')#
-results_dir = os.path.join(parent_dir, "results")  # os.path.join(source_dir, 'source_code')#
-
+from helpers import submission_dir, source_dir, results_dir
 
 # Create the version of the file that tracks malloc and free
 def create_tracker_files(file_names):

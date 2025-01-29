@@ -6,6 +6,7 @@ import timeout_decorator
 source_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(source_dir)
 submission_dir = os.path.join(parent_dir, "submission") # os.path.join(source_dir, 'source_code')#
+results_dir = os.path.join(parent_dir, "results")  # os.path.join(source_dir, 'source_code')#
 
 logger_exec_path =  submission_dir + '/StudentProgramLogger'
 file_load_path =    submission_dir + '/StudentProgramBase'
