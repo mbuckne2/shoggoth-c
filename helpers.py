@@ -1,4 +1,7 @@
 import os
+import subprocess
+import time
+
 import pandas as pd
 
 import timeout_decorator
@@ -9,7 +12,7 @@ submission_dir = os.path.join(parent_dir, "submission") # os.path.join(source_di
 results_dir = os.path.join(parent_dir, "results")  # os.path.join(source_dir, 'source_code')#
 
 logger_exec_path =  submission_dir + '/StudentProgramLogger'
-file_load_path =    submission_dir + '/StudentProgramBase'
+main_exec_path =    submission_dir + '/StudentProgramBase'
 
 
 def call_or_timeout(function):
@@ -68,3 +71,43 @@ def test_mallocs():
     frees_without_mallocs = frees[~frees['Address'].isin(mallocs['Address'])]
 
     return mallocs.shape[0], frees.shape[0], mallocs_without_frees, frees_without_mallocs, df
+
+
+def execute_program(program_args, runtime_input, file_path=main_exec_path):
+    """
+    :param program_args: arguments to execute the program with, should be an array of strings.
+        Each one is an argument piece. ex: ['-i', 'fileName.bmp']
+    :param runtime_input: array of strings representing inputs to write to the stdin during program execution.
+        No newline chars needed
+    :param file_path: file path of the program, defaults to standard, but you can also use logger or a custom variant
+    :return: program stdout output and error status
+
+    Sample Usage: output, return_code = helpers.execute_program(['-i' 'fileName.bmp'], [], file_path=helpers.main_exec_path)
+    """
+
+    print(program_args)
+    command = [file_path] + program_args
+
+    print(command)
+
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+    start_time = time.time()
+    while True:
+        if process.poll() is not None:  # If process is done
+            break
+        if time.time() - start_time > 5:  # 10-second timeout
+            process.terminate()
+            raise TimeoutError("The process took too long and was terminated.")
+
+        try:
+            for line in runtime_input:
+                process.stdin.write(str(line) + '\n')
+            process.stdin.flush()  # Make sure to flush the buffer
+        except BrokenPipeError:
+            # This exception occurs when the process has already terminated and no longer accepts input.
+            break
+
+    output = process.stdout.read()
+    process.wait()
+
+    return output, process.returncode
