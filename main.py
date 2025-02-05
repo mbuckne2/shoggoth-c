@@ -54,11 +54,12 @@ def build_json(test_results):
 
             test = {
                 "max_score": (result[1][i] * SUBMISSION_WEIGHT),
-                "name": result[0][i],
-                "output": result[3][i]
+                "name": f"{result[2][i]}) {result[0][i]}",
+                "number": result[2][i],
+                "output": result[4][i]
             }
 
-            if result[2][i] is True:
+            if result[3][i] is True:
                 submission_score += (result[1][i] * SUBMISSION_WEIGHT)
                 test["score"] = (result[1][i] * SUBMISSION_WEIGHT)
             else:
@@ -84,7 +85,7 @@ def build_json_on_fail(error):
 
 
 # looks for all files listed in the required files section of the config
-def find_files(file_list):
+def validate_files(file_list):
     missing_files = []
     for file in file_list:
         if not os.path.exists(os.path.join(submission_dir, file)):
@@ -97,7 +98,7 @@ def find_files(file_list):
 
 
 # finds disallowed packages across all the source files
-def find_disallowed_packages(files, allowed):
+def validate_libraries(files, allowed):
     disallowed_packages = []
     for file_name in files:
         with open(os.path.join(submission_dir, file_name), 'r') as file:
@@ -109,8 +110,8 @@ def find_disallowed_packages(files, allowed):
             disallowed_packages += packages_found
 
     if len(disallowed_packages) > 0:
-        build_json_on_fail("Error: Found disallowed Packages: " + ", ".join(disallowed_packages))
-        print("Error: Found disallowed Packages: " + ", ".join(disallowed_packages))
+        build_json_on_fail("Error: Found Disallowed Libraries: " + ", ".join(disallowed_packages))
+        print("Error: Found Disallowed Libraries: " + ", ".join(disallowed_packages))
         sys.exit(0)
 
 
@@ -160,11 +161,11 @@ if __name__ == '__main__':
 
     # compiles file list
     all_files = data['required_files'] + data['required_headers']
-    find_files(all_files)
+    validate_files(all_files)
 
     # gets package listing and looks for disallowed packages
     allowed = data['package_whitelist']
-    find_disallowed_packages(data['required_files'], allowed)
+    validate_libraries(data['required_files'], allowed)
 
     create_tracker_files(data['required_files'])
 
@@ -179,11 +180,12 @@ if __name__ == '__main__':
         except:
             pass
 
-        result = [[], []]
+        result = [[], [], []]
         for test in method["tests"]:
             # print(test)
             result[0].append(test["name"])
             result[1].append(test["points"])
+            result[2].append(test["number"])
 
         module = importlib.import_module(method["module"])
 
