@@ -27,7 +27,7 @@ def call_or_timeout(function):
                                        f"Uncaught Exception in autograder: {e}"]
 
 
-def error_handling(error):
+def describe_error(error):
     if error == -11:
         return "Your program encountered a segmentation fault."
     else:
