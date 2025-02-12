@@ -149,7 +149,10 @@ def compile_submission(submission_files):
     shutil.copy('mallocHooks.c', submission_dir)
     shutil.copy('mallocHooks.h', submission_dir)
 
-    submission_malloc_files = submission_files + ['mallocHooks.c']
+    submission_malloc_files = ['mallocHooks.c']
+    for file in submission_files:
+        tracker_file = file.replace(".", "Logger.")
+        submission_malloc_files.append(tracker_file)
     compile_files(submission_malloc_files, "StudentProgramLogger")
 
 

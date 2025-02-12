@@ -57,6 +57,15 @@ def find_and_remove_file(file_name):
 # dataframe
 #
 def test_mallocs():
+    """
+    Parses the malloc log file and returns stats about it, plus a dataframe with its full contents
+    :return:
+    num mallocs
+    num frees
+    [mallocs without frees]
+    [frees without mallocs]
+    dataframe
+    """
     column_names = ['Type', 'Address', 'Size', 'Line', 'File']
     try:
         df = pd.read_csv("malloc_log.csv", header=None, names=column_names)
@@ -83,12 +92,11 @@ def execute_program(program_args, runtime_input, file_path=main_exec_path):
     :return: program stdout output and error status
 
     Sample Usage: output, return_code = helpers.execute_program(['-i' 'fileName.bmp'], [], file_path=helpers.main_exec_path)
+
+    NOTE: All file pathing is based upon the root directory of the python program, not the submissions folder where the code is!
     """
 
-    print(program_args)
     command = [file_path] + program_args
-
-    print(command)
 
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
     start_time = time.time()
@@ -107,7 +115,7 @@ def execute_program(program_args, runtime_input, file_path=main_exec_path):
             # This exception occurs when the process has already terminated and no longer accepts input.
             break
 
-    output = process.stdout.read()
+    stdout, stderr = process.communicate()
     process.wait()
 
-    return output, process.returncode
+    return stdout, process.returncode
