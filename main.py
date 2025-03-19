@@ -75,6 +75,10 @@ def build_json(test_results):
 
 # builds the json file for when the autograder fails
 def build_json_on_fail(error):
+
+    if("variable length array" in error):
+        error = "You have used variable length arrays in your code which have been disallowed for this assignment. Please allocate all variably sized memory in the heap.\n" + error
+
     data = {
         "score": 0,
         "output": error
@@ -116,11 +120,14 @@ def validate_libraries(files, allowed):
 
 
 # compiles the list of submission_files into a program named program_name
-def compile_files(submission_files, program_name):
+def compile_files(submission_files, program_name, allow_vla):
+    vla_str = ""
+    if allow_vla:
+        vla_str = "-Werror=vla"
 
     # compile each c file into an o file
     for file in submission_files:
-        compile_submission_file = "cd {} && gcc -c {} -o {}.o".format(submission_dir, file, file[:-2])
+        compile_submission_file = f"cd {submission_dir} && gcc -c {vla_str}{file} -o {file[:-2]}.o"
         result = subprocess.run(compile_submission_file, shell=True, capture_output=True, text=True)
         if result.returncode != 0:
             build_json_on_fail("Compilation error compiling {}: ".format(file) + result.stderr)
@@ -141,9 +148,9 @@ def compile_files(submission_files, program_name):
 
 # compiles the student submission
 # example is given
-def compile_submission(submission_files):
+def compile_submission(submission_files, allow_vla):
 
-    compile_files(submission_files, "StudentProgramBase")
+    compile_files(submission_files, "StudentProgramBase", allow_vla)
 
     # copy the mallocHooks files into the submission directory so that they can easily be found
     shutil.copy('mallocHooks.c', submission_dir)
@@ -153,7 +160,7 @@ def compile_submission(submission_files):
     for file in submission_files:
         tracker_file = file.replace(".", "Logger.")
         submission_malloc_files.append(tracker_file)
-    compile_files(submission_malloc_files, "StudentProgramLogger")
+    compile_files(submission_malloc_files, "StudentProgramLogger", allow_vla)
 
 
 if __name__ == '__main__':
@@ -172,7 +179,7 @@ if __name__ == '__main__':
 
     create_tracker_files(data['required_files'])
 
-    compile_submission(data['required_files'])
+    compile_submission(data['required_files'], data['allow_vla'])
 
     results = []
 
