@@ -42,6 +42,8 @@ import re
 import pycparser
 
 import check_complexity
+import helpers
+import struct_size_finder
 
 # This is not required if you've installed pycparser into
 # your site-packages/ with setup.py
@@ -53,6 +55,7 @@ from pycparser.plyparser import Coord
 
 RE_CHILD_ARRAY = re.compile(r'(.*)\[(.*)\]')
 RE_INTERNAL_ATTR = re.compile('__.*__')
+FAKE_HEADERS_PATH = "/home/mitch/PycharmProjects/shoggoth-c/.venv/lib/python3.11/site-packages/pycparser_fake_libc"
 
 
 class CJsonError(Exception):
@@ -134,7 +137,7 @@ def file_to_dict(filename):
     ast = parse_file(
         filename,
         use_cpp=True,
-        cpp_args=['-I', "/home/container/.local/lib/python3.10/site-packages/pycparser_fake_libc"]  # Use fake headers
+        cpp_args=['-I', FAKE_HEADERS_PATH, '-I', helpers.source_dir]  # Use fake headers
     )
     return to_dict(ast)
 
@@ -197,3 +200,9 @@ def get_function_complexity(func_name, file_name) -> int:
     ast_dict = file_to_dict(file_name)
     ast = from_dict(ast_dict)
     return check_complexity.complexity_check(ast, func_name)
+
+def find_structs(file_name):
+    ast_dict = file_to_dict(file_name)
+    ast = from_dict(ast_dict)
+
+    struct_size_finder.find_struct_sizes(ast)

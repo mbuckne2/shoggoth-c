@@ -123,7 +123,7 @@ def validate_libraries(files, allowed):
 def compile_files(submission_files, program_name, allow_vla):
     vla_str = ""
     if allow_vla:
-        vla_str = "-Werror=vla"
+        vla_str = "-Werror=vla "
 
     # compile each c file into an o file
     for file in submission_files:

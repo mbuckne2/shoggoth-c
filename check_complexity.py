@@ -87,10 +87,10 @@ def loop_check(loop_depth, node, function_def_list, parent_name):
 
 # https://www.dii.uchile.cl/~daespino/files/Iso_C_1999_definition.pdf
 # supposedly what pycparser uses, go to page 402
-def complexity_check(ast, funcname):
+def complexity_check(ast, funcname) -> int:
     """
     Returns the time complexity of the provided function.
-    If recursion is found, returns MAX_INT
+    If recursion is found, returns -1
     """
     target_func_node = FindFuncDef(funcname).get_function_node(ast)
     # print(target_func_node)
@@ -99,4 +99,8 @@ def complexity_check(ast, funcname):
     dv = FuncDefVisitor()
     dv.visit(ast)
 
-    return loop_check(0, target_func_node, dv.functions, funcname)
+    complexity = loop_check(0, target_func_node, dv.functions, funcname)
+    if complexity == sys.maxsize:
+        complexity = -1
+
+    return complexity
