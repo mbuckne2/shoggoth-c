@@ -55,6 +55,7 @@ from pycparser.plyparser import Coord
 
 RE_CHILD_ARRAY = re.compile(r'(.*)\[(.*)\]')
 RE_INTERNAL_ATTR = re.compile('__.*__')
+# TODO: This should not be hardcoded
 FAKE_HEADERS_PATH = "/home/mitch/PycharmProjects/shoggoth-c/.venv/lib/python3.11/site-packages/pycparser_fake_libc"
 
 
@@ -137,7 +138,7 @@ def file_to_dict(filename):
     ast = parse_file(
         filename,
         use_cpp=True,
-        cpp_args=['-I', FAKE_HEADERS_PATH, '-I', helpers.source_dir]  # Use fake headers
+        cpp_args=['-I', FAKE_HEADERS_PATH]  # Use fake headers
     )
     return to_dict(ast)
 

@@ -85,8 +85,10 @@ def test_mallocs():
     return mallocs.shape[0], frees.shape[0], mallocs_without_frees, frees_without_mallocs, df
 
 
+# this has been replaced by util_console_testing
+"""
 def execute_program(program_args, runtime_input, file_path=main_exec_path):
-    """
+    
     :param program_args: arguments to execute the program with, should be an array of strings.
         Each one is an argument piece. ex: ['-i', 'fileName.bmp']
     :param runtime_input: array of strings representing inputs to write to the stdin during program execution.
@@ -97,7 +99,6 @@ def execute_program(program_args, runtime_input, file_path=main_exec_path):
     Sample Usage: output, return_code = helpers.execute_program(['-i' 'fileName.bmp'], [], file_path=helpers.main_exec_path)
 
     NOTE: All file pathing is based upon the root directory of the python program, not the submissions folder where the code is!
-    """
 
     command = [file_path] + program_args
 
@@ -122,3 +123,4 @@ def execute_program(program_args, runtime_input, file_path=main_exec_path):
     process.wait()
 
     return stdout, process.returncode
+"""
