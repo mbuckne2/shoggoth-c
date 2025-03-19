@@ -1,4 +1,7 @@
+from enum import EnumType
+
 from pycparser import c_ast
+from pycparser.c_ast import IdentifierType
 
 import ast_generator
 from helpers import submission_dir
@@ -7,6 +10,7 @@ from helpers import submission_dir
 class StructVisitor(c_ast.NodeVisitor):
     def __init__(self):
         self.structs = []
+        self.typedefs = {}
 
     def visit_Struct(self, node):
         if node.name:
@@ -14,11 +18,30 @@ class StructVisitor(c_ast.NodeVisitor):
             if node.decls:
                 self.structs.append(node)
 
+    # TODO: If the typedef is an array, the struct size finder won't calculate it right
     def visit_Typedef(self, node):
         if isinstance(node.type, c_ast.Struct):
             if node.decls:
                 self.structs.append(node)
-            # print(node)
+
+        contents_type = node.type.type
+        has_type = True
+
+        while not isinstance(contents_type, IdentifierType):
+            if isinstance(contents_type, c_ast.Enum):
+                self.typedefs[node.name] = "enum"
+                return
+
+            if(hasattr(contents_type, "type")):
+                contents_type = contents_type.type
+            else:
+                has_type = False
+                break
+
+        if has_type:
+            self.typedefs[node.name] = " ".join(contents_type.names)
+        else:
+            pass
 
 
 def find_struct_sizes(ast) -> dict:
@@ -43,7 +66,8 @@ def find_struct_sizes(ast) -> dict:
         '_Bool': 1,
         'wchar_t': 4,
         'size_t': 8,
-        'ptrdiff_t': 8
+        'ptrdiff_t': 8,
+        'enum': 4
     }
 
 
@@ -56,6 +80,8 @@ def find_struct_sizes(ast) -> dict:
         'sizes': []
     }
 
+    print(visitor.typedefs)
+
     for struct in visitor.structs:
         size = 0
         for decl in struct.decls:
@@ -63,8 +89,17 @@ def find_struct_sizes(ast) -> dict:
                 size += 4
             elif isinstance(decl.type, c_ast.TypeDecl):
                 if isinstance(decl.type.type, c_ast.IdentifierType):
+                    print(decl)
                     name = " ".join(decl.type.type.names)
-                    size += types[name]
+
+                    if name in types:
+                        size += types[name]
+                    elif name in visitor.typedefs:
+                        def_type = visitor.typedefs[name]
+                        if def_type in types:
+                            size += types[def_type]
+                        else:
+                            print("ERROR")
                 else:
                     print("This should not happen!")
             elif isinstance(decl.type, c_ast.ArrayDecl):
@@ -83,11 +118,11 @@ def find_struct_sizes(ast) -> dict:
                 print("ELSE")
                 # print(decl.type)
         struct_dict['sizes'].append((struct.name, size))
-
+    print("HELLO")
     print(struct_dict)
 
     return struct_dict
 
 
 if __name__ == "__main__":
-    ast_generator.find_structs(submission_dir + "/BaseFilters.c")
+    ast_generator.find_structs(submission_dir + "/CompletedScheduler.c")
