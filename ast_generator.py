@@ -202,8 +202,8 @@ def get_function_complexity(func_name, file_name) -> int:
     ast = from_dict(ast_dict)
     return check_complexity.complexity_check(ast, func_name)
 
-def find_structs(file_name):
+def find_structs(file_name) -> dict:
     ast_dict = file_to_dict(file_name)
     ast = from_dict(ast_dict)
 
-    struct_size_finder.find_struct_sizes(ast)
+    return struct_size_finder.find_struct_sizes(ast)

@@ -18,7 +18,6 @@ class StructVisitor(c_ast.NodeVisitor):
             if node.decls:
                 self.structs.append(node)
 
-    # TODO: If the typedef is an array, the struct size finder won't calculate it right
     def visit_Typedef(self, node):
         if isinstance(node.type, c_ast.Struct):
             if node.decls:
@@ -44,7 +43,7 @@ class StructVisitor(c_ast.NodeVisitor):
             pass
 
 
-def find_struct_sizes(ast) -> dict:
+def find_struct_sizes(ast, arch=64) -> dict:
     """
     Finds and returns the size of a struct based on the datatypes of the contents of the struct.
     Represents the size of a struct if you were to malloc one
@@ -80,16 +79,27 @@ def find_struct_sizes(ast) -> dict:
         'sizes': []
     }
 
-    print(visitor.typedefs)
+    # print(visitor.typedefs)
 
     for struct in visitor.structs:
         size = 0
+        things = []
         for decl in struct.decls:
             if isinstance(decl.type, c_ast.PtrDecl):
-                size += 4
+                things.append("pointer")
+                # pointer size varies based on architecture and are never packed so this needs to be accounted for
+                if arch == 64:
+                    # round up
+                    size = ((size + 7) // 8) * 8
+                    size += 8
+                elif arch == 32:
+                    # round up
+                    size = ((size + 3) // 4) * 4
+                    size += 4
             elif isinstance(decl.type, c_ast.TypeDecl):
                 if isinstance(decl.type.type, c_ast.IdentifierType):
-                    print(decl)
+                    things.append("Identifier")
+                    # print(decl)
                     name = " ".join(decl.type.type.names)
 
                     if name in types:
@@ -103,6 +113,7 @@ def find_struct_sizes(ast) -> dict:
                 else:
                     print("This should not happen!")
             elif isinstance(decl.type, c_ast.ArrayDecl):
+                things.append("array")
                 contents_type = decl.type
 
                 array_size = 1
@@ -116,10 +127,18 @@ def find_struct_sizes(ast) -> dict:
                 size += array_size
             else:
                 print("ELSE")
-                # print(decl.type)
+                print(decl.type)
+
+        # apply padding, nearest 8 or 4
+        if arch == 64:
+            size = ((size + 7) // 8) * 8
+        elif arch == 32:
+            size = ((size + 3) // 4) * 4
         struct_dict['sizes'].append((struct.name, size))
-    print("HELLO")
-    print(struct_dict)
+        print(things)
+
+    # print("HELLO")
+    # print(struct_dict)
 
     return struct_dict
 
