@@ -120,14 +120,14 @@ def validate_libraries(files, allowed):
 
 
 # compiles the list of submission_files into a program named program_name
-def compile_files(submission_files, program_name, allow_vla):
+def compile_files(submission_files, program_name, allow_vla, c_version):
     vla_str = ""
     if allow_vla:
         vla_str = "-Werror=vla "
 
     # compile each c file into an o file
     for file in submission_files:
-        compile_submission_file = f"cd {submission_dir} && gcc -c {vla_str}{file} -o {file[:-2]}.o"
+        compile_submission_file = f"cd {submission_dir} && gcc -c -std=c{c_version} -O0 {vla_str}{file} -o {file[:-2]}.o"
         result = subprocess.run(compile_submission_file, shell=True, capture_output=True, text=True)
         if result.returncode != 0:
             build_json_on_fail("Compilation error compiling {}: ".format(file) + result.stderr)
@@ -137,7 +137,7 @@ def compile_files(submission_files, program_name, allow_vla):
     # get names of every o file from c file names
     o_files = [os.path.splitext(c_file)[0] + ".o" for c_file in submission_files]
     #run compilation
-    compile_program = "cd {} && gcc {} -o {}".format(submission_dir, " ".join(o_files), program_name)
+    compile_program = f"cd {submission_dir} && gcc -std=c{c_version} -O0 {' '.join(o_files)} -o {program_name}"
     result = subprocess.run(compile_program, shell=True, capture_output=True, text=True)
     # fail if there was a compilation issue
     if result.returncode != 0:
@@ -148,9 +148,9 @@ def compile_files(submission_files, program_name, allow_vla):
 
 # compiles the student submission
 # example is given
-def compile_submission(submission_files, allow_vla):
+def compile_submission(submission_files, allow_vla, c_version):
 
-    compile_files(submission_files, "StudentProgramBase", allow_vla)
+    compile_files(submission_files, "StudentProgramBase", allow_vla, c_version)
 
     # copy the mallocHooks files into the submission directory so that they can easily be found
     shutil.copy('mallocHooks.c', submission_dir)
@@ -160,7 +160,7 @@ def compile_submission(submission_files, allow_vla):
     for file in submission_files:
         tracker_file = file.replace(".", "Logger.")
         submission_malloc_files.append(tracker_file)
-    compile_files(submission_malloc_files, "StudentProgramLogger", allow_vla)
+    compile_files(submission_malloc_files, "StudentProgramLogger", allow_vla, c_version)
 
 
 if __name__ == '__main__':
@@ -173,13 +173,17 @@ if __name__ == '__main__':
     all_files = data['required_files'] + data['required_headers']
     validate_files(all_files)
 
+    # updates file versions list for variations of student files
+    helpers.FILE_VERSIONS = data['file_versions']
+    print(helpers.FILE_VERSIONS)
+
     # gets package listing and looks for disallowed packages
     allowed = data['package_whitelist']
     validate_libraries(data['required_files'], allowed)
 
     create_tracker_files(data['required_files'])
 
-    compile_submission(data['required_files'], data['allow_vla'])
+    compile_submission(data['required_files'], data['allow_vla'], data['c_version'])
 
     results = []
 
@@ -200,7 +204,7 @@ if __name__ == '__main__':
         module = importlib.import_module(method["module"])
 
         # calls the methods
-        success_list, message_list = helpers.call_or_timeout(getattr(module, method["method"]))
+        success_list, message_list = helpers.call_or_timeout(getattr(module, method["method"]), len(method["tests"]), method["file_version"])
         result.append(success_list)
         result.append(message_list)
 

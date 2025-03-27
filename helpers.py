@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import traceback
 
 import pandas as pd
 
@@ -14,28 +15,29 @@ parent_dir = os.path.dirname(source_dir)
 submission_dir = os.path.join(parent_dir, "submission") # os.path.join(source_dir, 'source_code')#
 results_dir = os.path.join(parent_dir, "results")  # os.path.join(source_dir, 'source_code')#
 
-logger_exec_path =  submission_dir + '/StudentProgramLogger'
-main_exec_path =    submission_dir + '/StudentProgramBase'
+logger_file_path = submission_dir + '/StudentProgramLogger'
+main_file_path = submission_dir + '/StudentProgramBase'
+# if adding a file version, make sure to update it here
+FILE_VERSIONS = ['base', 'logger']
 
-
-def call_or_timeout(function):
+def call_or_timeout(function, count=3, file_version='logger'):
+    # if file version is invalid
+    if file_version not in FILE_VERSIONS:
+        file_version = 'base'
     try:
-        return function()
+        return function(file_version)
     except timeout_decorator.TimeoutError:
-        return [False, False, False], ["Function took too long and was timed out.", "Function took too long and was timed out.", "Function took too long and was timed out."]
+        return [False] * count, ["Function took too long and was timed out."] * count
     except TimeoutError:
-        return [False, False, False], ["Function took too long and was timed out.",
-                                       "Function took too long and was timed out.",
-                                       "Function took too long and was timed out."]
+        return [False] * count, ["Function took too long and was timed out."] * count
     except Exception as e:
-        return [False, False, False], [f"Uncaught Exception in autograder: {e}",
-                                       f"Uncaught Exception in autograder: {e}",
-                                       f"Uncaught Exception in autograder: {e}"]
+        traceback.print_exc()
+        return [False] * count, [f"Uncaught Exception in autograder: {e}"] * count
 
 
 def describe_error(error):
     if error == -11:
-        return "Your program encountered a segmentation fault."
+        return f"Your program encountered a segmentation fault. Exit code: " + str(error)
     else:
         return "Your program encountered an error. Exit code: " + str(error)
 

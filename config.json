@@ -2,15 +2,19 @@
   "module": "mX",
   "uid": "cpX",
   "project_location": "/autograder/submission/",
+  "file_versions": ["base", "logger"],
+  "c_version": "99",
   "suite": [
      {
       "module":"test_main_menu",
       "method":"test_credit_count",
+      "file_version": "base",
       "tests": [
         {
           "name": "Main Menu 1 [Hint: Displays Credits.]",
           "number": 1.1,
           "points": 1
+
         },
         {
           "name": "Main Menu 2 [Hint: Displays Correct Credit Count.]",
@@ -22,6 +26,7 @@
     {
       "module":"test_course_insert",
       "method":"test_course_insert_1",
+      "file_version": "logger",
       "tests": [
         {
           "name": "Insert Course 1 [Hint: Basic Behavior.]",
